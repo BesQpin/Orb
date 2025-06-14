@@ -9,7 +9,7 @@ import (
 	"github.com/BesQpin/orb/internal/checks/tcp"
 )
 
-func Start() {
+func Start() error {
 	http.HandleFunc("/healthz/live", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("live"))
@@ -24,6 +24,6 @@ func Start() {
 	http.HandleFunc("/check/tcp", tcp.HTTPHandler)
 	http.HandleFunc("/check/http", httpcheck.HTTPHandler)
 
-	log.Println("Starting HTTP server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("🌐 Starting HTTP server on :8080")
+	return http.ListenAndServe(":8080", nil)
 }
