@@ -1,7 +1,4 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Build and Verify Orb
 
 on:
   push:
@@ -10,9 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
 
@@ -21,8 +18,39 @@ jobs:
       with:
         go-version: '1.24.3'
 
-    - name: Build
-      run: go build -v ./...
+    - name: Build orb binary
+      run: go build -v -o orb ./cmd/orbmain
 
-    #- name: Test
-    #  run: go test -v ./...
+    - name: Run DNS check against google.com
+      run: ./orb --mode=cli dns google.com
+
+    - name: Run TCP check against google.com:80
+      run: ./orb --mode=cli tcp google.com:80
+
+    - name: Run HTTP check against https://google.com
+      run: ./orb --mode=cli http https://google.com
+
+  release:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && success()
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24.3'
+
+    - name: Build orb binary again
+      run: go build -v -o orb ./cmd/orbmain
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: "Orb Release"
+        tag_name: "v1.0.${{ github.run_number }}"
+        files: orb
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
