@@ -43,7 +43,7 @@ go build ./cmd/orbmain
 Run the application in CLI mode with:
 
 ```bash
-./orbmain --mode=cli
+./orb --mode=cli
 ```
 
 Then use subcommands:
@@ -51,7 +51,7 @@ Then use subcommands:
 #### DNS Check
 
 ```bash
-./orbmain dns google.com
+./orb dns google.com
 ```
 
 #### TCP Check
