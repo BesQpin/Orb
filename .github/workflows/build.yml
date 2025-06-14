@@ -33,6 +33,22 @@ jobs:
     - name: Run HTTP check against https://google.com
       run: ./orb --mode=cli http https://google.com
 
+    - name: Run and test HTTP server
+      run: |
+        ./orb --mode=http &
+        echo "Waiting for server to start..."
+        for i in {1..10}; do
+          curl -sSf http://localhost:8080/healthz/live && break || sleep 1
+        done
+
+        echo "✅ Live probe responded"
+
+        curl -sSf "http://localhost:8080/check/dns?host=google.com"
+        curl -sSf "http://localhost:8080/check/tcp?host=google.com&port=80"
+        curl -sSf "http://localhost:8080/check/http?url=https://google.com"
+
+        echo "✅ All HTTP checks passed"
+
   release:
     needs: build-and-test
     if: github.ref == 'refs/heads/main' && success()
