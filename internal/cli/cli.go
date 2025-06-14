@@ -24,7 +24,6 @@ func init() {
 		switch mode {
 		case "cli":
 			checks.RegisterCLIChecks(cmd)
-			cmd.Execute()
 		case "http":
 			server.Start()
 		default:
