@@ -19,7 +19,7 @@ jobs:
         go-version: '1.24.3'
 
     - name: Build orb binary
-      run: go build -v -o orb ./main/orbmain
+      run: go build -v -o orb ./main/
 
     - name: Run DNS check against google.com
       run: ./orb --mode=cli dns google.com
@@ -44,7 +44,7 @@ jobs:
         go-version: '1.24.3'
 
     - name: Build orb binary again
-      run: go build -v -o orb ./main/orbmain
+      run: go build -v -o orb ./main/
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
